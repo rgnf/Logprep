@@ -2,6 +2,7 @@
 # pylint: disable=attribute-defined-outside-init
 # pylint: disable=protected-access
 from unittest import mock
+
 from logprep.connector.jsonl.output import JsonlOutput
 from tests.unit.connector.base import BaseOutputTestCase
 
@@ -17,37 +18,6 @@ class TestJsonlOutputOutput(BaseOutputTestCase):
     def setup_method(self) -> None:
         super().setup_method()
         self.document = {"message": "test message"}
-
-    @mock.patch("logprep.connector.jsonl.output.JsonlOutput._write_json")
-    def test_store_appends_document_to_variable(self, _):
-        self.object.store(self.document)
-        assert len(self.object.events) == 1
-        assert self.object.events[0] == self.document
-
-    @mock.patch("logprep.connector.jsonl.output.JsonlOutput._write_json")
-    def test_store_custom_appends_document_to_variable(self, _):
-        self.object.store_custom(self.document, target="whatever")
-        assert len(self.object.events) == 1
-        assert self.object.events[0] == {"whatever": self.document}
-
-    @mock.patch("logprep.connector.jsonl.output.JsonlOutput._write_json")
-    def test_store_maintains_order_of_documents(self, _):
-        for i in range(0, 3):
-            self.object.store({"order": i})
-
-        assert len(self.object.events) == 3
-        for order in range(0, 3):
-            assert self.object.events[order]["order"] == order
-
-    @mock.patch("logprep.connector.jsonl.output.JsonlOutput._write_json")
-    def test_stores_failed_events_in_respective_list(self, _):
-        self.object.store_failed("message", {"doc": "received"}, {"doc": "processed"})
-        assert len(self.object.failed_events) == 1
-        assert self.object.failed_events[0] == (
-            "message",
-            {"doc": "received"},
-            {"doc": "processed"},
-        )
 
     @mock.patch("logprep.connector.jsonl.output.JsonlOutput._write_json")
     def test_write_document_to_file_on_store(self, _):

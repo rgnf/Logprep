@@ -48,19 +48,11 @@ class JsonlOutput(Output):
         output_file_error = field(validator=validators.instance_of(str), default="")
 
     last_timeout: float
-    events: list
-    failed_events: list
 
-    __slots__ = [
-        "ast_timeout",
-        "events",
-        "failed_events",
-    ]
+    __slots__ = ("last_timeout",)
 
     def __init__(self, name: str, configuration: "Output.Config", logger: Logger):
         super().__init__(name, configuration, logger)
-        self.events = []
-        self.failed_events = []
 
     def setup(self):
         super().setup()
@@ -77,7 +69,6 @@ class JsonlOutput(Output):
             file.write(f"{json.dumps(line)}\n")
 
     def store(self, document: dict):
-        self.events.append(document)
         JsonlOutput._write_json(self._config.output_file, document)
         self.metrics.number_of_processed_events += 1
         if self.input_connector:
@@ -85,14 +76,11 @@ class JsonlOutput(Output):
 
     def store_custom(self, document: dict, target: str):
         document = {target: document}
-        self.events.append(document)
 
         if self._config.output_file_custom:
             JsonlOutput._write_json(self._config.output_file_custom, document)
 
     def store_failed(self, error_message: str, document_received: dict, document_processed: dict):
-        self.failed_events.append((error_message, document_received, document_processed))
-
         if self._config.output_file_error:
             JsonlOutput._write_json(
                 self._config.output_file_error,
