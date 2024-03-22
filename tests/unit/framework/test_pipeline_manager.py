@@ -21,6 +21,10 @@ class TestPipelineManager:
 
     def teardown_method(self):
         self.manager._pipelines = []
+        try:
+            self.manager.stop()
+        except ValueError:
+            pass
 
     def test_get_count_returns_count_of_pipelines(self):
         for count in range(5):
@@ -97,8 +101,8 @@ class TestPipelineManager:
     def test_stop_terminates_processes_created(self):
         self.manager.set_count(3)
         logprep_instances = list(self.manager._pipelines)
-
-        self.manager.stop()
+        with mock.patch.object(self.manager, "_queue_listener"):
+            self.manager.stop()
 
         assert len(logprep_instances) == 3
 
