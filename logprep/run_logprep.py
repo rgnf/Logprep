@@ -100,6 +100,12 @@ def run(configs: tuple[str], version=None) -> None:
         if runner:
             runner.stop()
         sys.exit(1)
+    finally:
+        if runner and runner._manager:  # pylint: disable=protected-access
+            try:
+                runner._manager.stop()  # pylint: disable=protected-access
+            except ValueError:
+                pass
     # pylint: enable=broad-except
 
 

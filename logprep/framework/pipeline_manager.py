@@ -66,6 +66,15 @@ class PipelineManager:
         manager = multiprocessing.Manager()
         self._used_server_ports = manager.dict()
 
+    def __enter__(self) -> "PipelineManager":
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        try:
+            self.stop()
+        except ValueError:  # is raised if log queue is already closed
+            pass
+
     def get_count(self) -> int:
         """Get the pipeline count.
 

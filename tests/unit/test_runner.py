@@ -43,6 +43,17 @@ def fixture_runner(configuration: Configuration) -> Runner:
 
 
 class TestRunner:
+
+    def setup_method(self):
+        self.runner: Runner = None
+
+    def teardown_method(self):
+        if Runner._runner is not None:
+            try:
+                Runner._runner._manager.stop()
+            except ValueError:
+                pass
+
     def test_runner_sets_configuration(self):
         configuration = Configuration.from_sources([path_to_config])
         runner = Runner.get_runner(configuration)

@@ -142,8 +142,9 @@ class TestPipelineManager:
             manager = PipelineManager(config)
             prometheus_exporter_mock = mock.MagicMock()
             manager.prometheus_exporter = prometheus_exporter_mock
-            manager.stop()
-            prometheus_exporter_mock.cleanup_prometheus_multiprocess_dir.assert_called()
+            with mock.patch.object(manager, "log_queue"):
+                manager.stop()
+                prometheus_exporter_mock.cleanup_prometheus_multiprocess_dir.assert_called()
 
     def test_prometheus_exporter_is_instanciated_if_metrics_enabled(self):
         self.config.metrics = MetricsConfig(enabled=True, port=8000)

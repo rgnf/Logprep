@@ -15,7 +15,6 @@ from logprep import run_logprep
 from logprep._version import get_versions
 from logprep.run_logprep import cli
 from logprep.util.configuration import Configuration, InvalidConfigurationError
-from logprep.util.defaults import DEFAULT_CONFIG_LOCATION
 
 
 class TestRunLogprepCli:
